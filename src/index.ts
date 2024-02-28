@@ -1,5 +1,15 @@
 import { defineCommand, runMain } from "citty";
-import prompts from "@posva/prompts";
+import { consola } from "consola";
+
+function describeCommand(warn: boolean, message?: string) {
+  const defaulMessage = "Are you sure you want to run this command?";
+
+  if (warn) {
+    consola.warn(message || defaulMessage);
+  } else {
+    consola.info(message || defaulMessage);
+  }
+}
 
 const main = defineCommand({
   meta: {
@@ -8,24 +18,38 @@ const main = defineCommand({
     description: "Are you sure cli",
   },
   args: {
-    name: {
-      type: "string",
-      description: "Your name",
+    command: {
+      type: "positional",
+      description: "The command you want to run",
       required: true,
+      alias: "c",
+    },
+    "default-to-yes": {
+      type: "boolean",
+      description: "What the default value should be",
+      alias: "y",
+      default: false,
     },
     warn: {
       type: "boolean",
-      description: "Use friendly greeting",
+      description: "Yellow warning message",
+      alias: "w",
+    },
+    message: {
+      type: "string",
+      description: "A message to display",
+      alias: "m",
     },
   },
   run: async ({ args }) => {
-    console.log(`${args.warn ? "Hi" : "Greetings"} ${args.name}!`);
-    const reponse = await prompts({
+    describeCommand(args["default-to-yes"], args.message);
+    const response = await consola.prompt("Deploy to the production?", {
       type: "confirm",
-      name: "value",
-      message: "Are you sure you want to run this command?",
+      initial: args["default-to-yes"],
     });
-    console.log(reponse);
+    if (response) {
+      consola.success("Deployed to production");
+    }
   },
 });
 

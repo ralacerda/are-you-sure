@@ -47,6 +47,7 @@
   },
   "packageManager": "pnpm@8.12.1",
   "dependencies": {
+    "@clack/core": "^0.3.4",
     "citty": "^0.1.6",
     "consola": "^3.2.3"
   }
